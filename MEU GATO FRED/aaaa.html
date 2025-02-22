@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ping Pong Fred</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            background: black;
+            display: block;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ping Pong Fred</h1>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        
+        let playerY = canvas.height / 2 - 50;
+        let aiY = canvas.height / 2 - 50;
+        let ballX = canvas.width / 2;
+        let ballY = canvas.height / 2;
+        let ballSpeedX = 5;
+        let ballSpeedY = 5;
+        let playerScore = 0;
+        let aiScore = 0;
+        
+        const fredImg = new Image();
+        fredImg.src = "aaaa.PNG";  // Certifique-se de que a imagem está no mesmo diretório ou ajuste o caminho
+        
+        function drawRect(x, y, width, height, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, width, height);
+        }
+        
+        function drawBall(x, y, radius, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function drawFred(x, y) {
+            ctx.drawImage(fredImg, x, y, 50, 100);
+        }
+        
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawRect(10, playerY, 10, 100, "white");
+            drawFred(canvas.width - 60, aiY);
+            drawBall(ballX, ballY, 10, "white");
+            
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+            
+            if (ballY <= 0 || ballY >= canvas.height) {
+                ballSpeedY *= -1;
+            }
+            
+            if (ballX <= 20 && ballY > playerY && ballY < playerY + 100) {
+                ballSpeedX *= -1;
+            }
+            
+            if (ballX >= canvas.width - 60 && ballY > aiY && ballY < aiY + 100) {
+                ballSpeedX *= -1;
+            }
+            
+            if (ballX < 0) {
+                aiScore++;
+                resetBall();
+            }
+            
+            if (ballX > canvas.width) {
+                playerScore++;
+                resetBall();
+            }
+            
+            aiY += (ballY - (aiY + 50)) * 0.1;
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function resetBall() {
+            ballX = canvas.width / 2;
+            ballY = canvas.height / 2;
+            ballSpeedX *= -1;
+        }
+        
+        document.addEventListener("mousemove", (event) => {
+            const rect = canvas.getBoundingClientRect();
+            playerY = event.clientY - rect.top - 50;
+        });
+        
+        gameLoop();
+    </script>
+</body>
+</html>
